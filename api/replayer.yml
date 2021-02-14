@@ -1,0 +1,103 @@
+openapi: '3.0.2'
+info:
+  title: Hermes Replay Service
+  version: '0.0.1'
+  description: |
+    Replay service API for parsing and replay WARC records
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /replays/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: |
+          Unique identifier of the replay object
+    get:
+      summary: Get replay object
+      description: Get a replay object
+      tags:
+        - replays
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replay'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Replay:
+      description: Replay object
+      type: object
+      required:
+        - id
+        - uri
+        - timestamp
+        - type
+        - content
+      properties:
+        uri:
+          description: The URI of the replay
+          type: string
+          example: http://example.com/
+        title:
+          description: The title of the HTML document
+          type: string
+          example: Hello World
+        sha:
+          description: The sha1sum of the content payload
+          type: string
+          example: Hello World
+        timestamp:
+          description: |
+            Immutable timestamp indicating when the data capture for the WARC
+            record began; can be used for filtering results and pagination
+          type: string
+          format: date-time  # RFC 3339, section 5.6
+          example: "2020-07-27T17:32:28Z"
+        content:
+          description: The replay payload containing the original response
+          type: string
+          example: <html><head>Hello World</head><body>This is a body</body></html>
+    Error:
+      description: Base error object
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request (400)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal server error (500)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found (404)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

@@ -1,0 +1,102 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"net"
+	"os"
+	"strconv"
+	"syscall"
+
+	"github.com/crossedbot/common/golang/config"
+	"github.com/crossedbot/common/golang/logger"
+	"github.com/crossedbot/common/golang/server"
+	"github.com/crossedbot/common/golang/service"
+	"github.com/crossedbot/hermes-archiver/cmd"
+	"github.com/crossedbot/hermes-archiver/pkg/indexer"
+	"github.com/crossedbot/hermes-archiver/pkg/indexer/controller"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
+)
+
+const (
+	FatalExitCode = iota + 1
+)
+
+type Config struct {
+	Host          string `toml:"host"`
+	Port          int    `toml:"port"`
+	ReadTimeout   int    `toml:"read_timeout"`  // in seconds
+	WriteTimeout  int    `toml:"write_timeout"` // in seconds
+	WarcDirectory string `toml:"warc_directory"`
+	DatabaseAddr  string `toml:"database_addr"`
+
+	// Encyption configuraiton
+	EncryptionKey  string `toml:"encryption_key"`
+	EncryptionSalt string `toml:"encryption_salt"`
+
+	// IPFS configuration
+	IpfsAddress string `toml:"ipfs_address"`
+}
+
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	svc := service.New(ctx)
+	if err := svc.Run(run, syscall.SIGINT, syscall.SIGTERM); err != nil {
+		cancel()
+		fatal("Error: %s", err)
+	}
+}
+
+func fatal(format string, a ...interface{}) {
+	logger.Error(fmt.Errorf(format, a...))
+	os.Exit(FatalExitCode)
+}
+
+func newServer(c Config) server.Server {
+	hostport := net.JoinHostPort(c.Host, strconv.Itoa(c.Port))
+	srv := server.New(
+		hostport,
+		c.ReadTimeout,
+		c.WriteTimeout,
+	)
+	for _, route := range controller.Routes {
+		srv.Add(
+			route.Handler,
+			route.Method,
+			route.Path,
+			route.ResponseSettings...,
+		)
+	}
+	controller.V1()
+	return srv
+}
+
+func run(ctx context.Context) error {
+	f := cmd.ParseFlags()
+	config.Path(f.ConfigFile)
+	var c Config
+	if err := config.Load(&c); err != nil {
+		return err
+	}
+	srv := newServer(c)
+	db := cdxjdb.New(ctx, c.DatabaseAddr)
+	if err := db.Init(); err != nil {
+		return err
+	}
+	in, err := indexer.New(ctx, c.IpfsAddress, c.WarcDirectory, db)
+	if err != nil {
+		return err
+	}
+	in.SetEncryptionKey([]byte(c.EncryptionKey), []byte(c.EncryptionSalt))
+	if err := in.Start(); err != nil {
+		return err
+	}
+	logger.Info(fmt.Sprintf("Started indexer on %s", c.WarcDirectory))
+	if err := srv.Start(); err != nil {
+		return err
+	}
+	logger.Info(fmt.Sprintf("Listening on %s:%d", c.Host, c.Port))
+	<-ctx.Done()
+	logger.Info("Received signal, shutting down...")
+	return nil
+}
