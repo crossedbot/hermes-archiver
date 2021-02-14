@@ -18,7 +18,7 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 
 	"github.com/crossedbot/common/golang/crypto/aes"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/models"
 	"github.com/crossedbot/simplewarc"
 )

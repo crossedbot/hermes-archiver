@@ -10,7 +10,7 @@ import (
 
 	"github.com/crossedbot/common/golang/logger"
 	"github.com/crossedbot/go-warc-indexer"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 	"github.com/crossedbot/simplecdxj"
 	"github.com/fsnotify/fsnotify"

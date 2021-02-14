@@ -7,7 +7,7 @@ import (
 
 	"github.com/crossedbot/common/golang/config"
 	"github.com/crossedbot/common/golang/crypto"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/replayer"
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/models"
 )

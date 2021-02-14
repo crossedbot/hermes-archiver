@@ -13,9 +13,9 @@ import (
 	"github.com/crossedbot/common/golang/server"
 	"github.com/crossedbot/common/golang/service"
 	"github.com/crossedbot/hermes-archiver/cmd"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/controller"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
 )
 
 const (

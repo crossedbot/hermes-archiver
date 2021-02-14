@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/crossedbot/common/golang/config"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/indexer/database"
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 	"github.com/crossedbot/simplecdxj"
 )
