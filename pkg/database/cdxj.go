@@ -50,9 +50,7 @@ func (d *cdxjRecords) Init() error {
 		AddField(redisearch.NewSortableNumericField("timestamp")).
 		AddField(redisearch.NewTextField("type")).
 		AddField(redisearch.NewTextField("content"))
-	if err := d.Drop(); err != nil {
-		return err
-	}
+	d.Drop()
 	return d.CreateIndex(schema)
 }
 

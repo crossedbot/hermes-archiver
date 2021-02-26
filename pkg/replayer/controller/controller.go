@@ -46,10 +46,13 @@ var V1 = func() Controller {
 			panic(err)
 		}
 		ctx := context.Background()
-		extKey := crypto.ExtendKey(
-			[]byte(cfg.EncryptionKey),
-			[]byte(cfg.EncryptionSalt),
-		)
+		extKey := []byte{}
+		if cfg.EncryptionKey != "" {
+			extKey = crypto.ExtendKey(
+				[]byte(cfg.EncryptionKey),
+				[]byte(cfg.EncryptionSalt),
+			)
+		}
 		db := cdxjdb.New(ctx, cfg.DatabaseAddr)
 		rpl, err := replayer.New(ctx, cfg.IpfsAddress, db)
 		if err != nil {
