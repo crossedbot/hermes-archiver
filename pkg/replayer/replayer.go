@@ -51,6 +51,8 @@ func New(
 }
 
 func (rp *replayer) Replay(id string, key []byte) (models.Replay, error) {
+	var aead cipher.AEAD
+	var nonce []byte
 	rec, err := rp.db.Get(id)
 	if err != nil {
 		return models.Replay{}, err
@@ -59,13 +61,15 @@ func (rp *replayer) Replay(id string, key []byte) (models.Replay, error) {
 	if err != nil {
 		return models.Replay{}, err
 	}
-	nonce, err := base64.URLEncoding.DecodeString(rec.Content.EncryptionNonce)
-	if err != nil {
-		return models.Replay{}, err
-	}
-	aead, err := aes.AesGcmKey(key)
-	if err != nil {
-		return models.Replay{}, err
+	if key != nil && len(key) > 0 {
+		nonce, err = base64.URLEncoding.DecodeString(rec.Content.EncryptionNonce)
+		if err != nil {
+			return models.Replay{}, err
+		}
+		aead, err = aes.AesGcmKey(key)
+		if err != nil {
+			return models.Replay{}, err
+		}
 	}
 	payload := []byte{}
 	if len(loc) > 1 {
@@ -118,7 +122,8 @@ func pull(
 		return "", err
 	}
 	b := make([]byte, sz)
-	if _, err := ipfsfiles.ToFile(fn).Read(b); err != nil {
+	_, err = ipfsfiles.ToFile(fn).Read(b)
+	if err != nil && err != io.EOF {
 		return "", err
 	}
 	return string(b), nil
@@ -140,9 +145,12 @@ func decode(msg string, key cipher.AEAD, nonce []byte) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	decrypted, err := key.Open(nil, nonce, decoded, nil)
-	if err != nil {
-		return nil, err
+	content := decoded
+	if key != nil {
+		content, err = key.Open(nil, nonce, decoded, nil)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return decompress(bytes.NewReader(decrypted), simplewarc.GzipCompression)
+	return decompress(bytes.NewReader(content), simplewarc.GzipCompression)
 }

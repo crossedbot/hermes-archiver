@@ -6,8 +6,8 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/RediSearch/redisearch-go v1.1.0
 	github.com/crossedbot/common v0.0.0-20210203015813-0e121789bea8
-	github.com/crossedbot/go-warc-indexer v0.0.0-20210214022315-6fb97558a250
-	github.com/crossedbot/simplecdxj v0.0.0-20210105051219-8025b2add98e
+	github.com/crossedbot/go-warc-indexer v0.0.0-20210226022444-a49bc2ae8a64
+	github.com/crossedbot/simplecdxj v0.0.0-20210225045125-3a9727944d53
 	github.com/crossedbot/simplewarc v0.0.0-20210108053025-06a0f7c6238c
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/google/uuid v1.2.0
