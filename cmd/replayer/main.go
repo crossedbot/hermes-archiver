@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"syscall"
 
@@ -18,6 +19,11 @@ import (
 
 const (
 	FatalExitCode = iota + 1
+)
+
+var (
+	Version = "-"
+	Build   = "-"
 )
 
 type Config struct {
@@ -61,6 +67,14 @@ func newServer(c Config) server.Server {
 
 func run(ctx context.Context) error {
 	f := cmd.ParseFlags()
+	if f.Version {
+		fmt.Printf(
+			"%s version %s, build %s\n",
+			filepath.Base(os.Args[0]),
+			Build, Version,
+		)
+		return nil
+	}
 	config.Path(f.ConfigFile)
 	var c Config
 	if err := config.Load(&c); err != nil {

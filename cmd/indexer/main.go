@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"syscall"
 
@@ -20,6 +21,11 @@ import (
 
 const (
 	FatalExitCode = iota + 1
+)
+
+var (
+	Version = "-"
+	Build   = "-"
 )
 
 type Config struct {
@@ -41,8 +47,10 @@ type Config struct {
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	svc := service.New(ctx)
-	if err := svc.Run(run, syscall.SIGINT, syscall.SIGTERM); err != nil {
-		cancel()
+	err := svc.Run(run, syscall.SIGINT, syscall.SIGTERM)
+	// cancel irregardless of error state
+	cancel()
+	if err != nil {
 		fatal("Error: %s", err)
 	}
 }
@@ -73,6 +81,14 @@ func newServer(c Config) server.Server {
 
 func run(ctx context.Context) error {
 	f := cmd.ParseFlags()
+	if f.Version {
+		fmt.Printf(
+			"%s version %s, build %s\n",
+			filepath.Base(os.Args[0]),
+			Build, Version,
+		)
+		return nil
+	}
 	config.Path(f.ConfigFile)
 	var c Config
 	if err := config.Load(&c); err != nil {
