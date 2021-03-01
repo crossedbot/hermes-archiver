@@ -71,7 +71,7 @@ func run(ctx context.Context) error {
 		fmt.Printf(
 			"%s version %s, build %s\n",
 			filepath.Base(os.Args[0]),
-			Build, Version,
+			Version, Build,
 		)
 		return nil
 	}
