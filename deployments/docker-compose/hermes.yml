@@ -1,12 +1,23 @@
 services:
   ipfs:
     image: ipfs-api
+    healthcheck:
+      test: ipfs id
+      interval: 1s
+      timeout: 3s
+      retries: 30
   redis:
     image: crossedbot/redisedge
+    healthcheck:
+      test: redis-cli -u redis://127.0.0.1:6379 ping
+      interval: 1s
+      timeout: 3s
+      retries: 30
   insights:
     image: redislabs/redisinsight
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     links:
       - redis
     ports:
@@ -17,8 +28,10 @@ services:
     image: hermes-indexer
     command: "-k '${KEY}' -s '${SALT}'"
     depends_on:
-      - ipfs
-      - redis
+      ipfs:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     links:
       - ipfs
       - redis
@@ -28,8 +41,10 @@ services:
     image: hermes-replayer
     command: "-k '${KEY}' -s '${SALT}'"
     depends_on:
-      - ipfs
-      - redis
+      ipfs:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     links:
       - ipfs
       - redis
