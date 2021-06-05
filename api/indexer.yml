@@ -203,6 +203,7 @@ components:
       style: form
       explode: false
     before:
+      # TODO API documentation does not reflect correct datatype?
       description: Return records created before provided timestamp
       name: before
       in: query
@@ -212,6 +213,7 @@ components:
         format: date-time  # RFC 3339, section 5.6
       example: "2020-07-27T17:32:28Z"
     after:
+      # TODO API documentation does not reflect correct datatype?
       description: Return records created after provided timestamp
       name: after
       in: query

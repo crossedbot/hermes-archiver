@@ -14,28 +14,38 @@ import (
 )
 
 var (
+	// Errors
 	ErrorRecordNotFound = errors.New("record not found")
 )
 
+// Controller represents an interface of an WARC-CDXJ record indexer's
+// controller
 type Controller interface {
+	// FindRecords searches for records that match the given values and returns
+	// a list of matching records
 	FindRecords(
 		surt string,
 		types []simplecdxj.RecordType,
 		before, after string,
 		limit int,
 	) (models.Records, error)
+
+	// GetRecord returns the record for the given record ID
 	GetRecord(id string) (models.Record, error)
 }
 
+// controller implements the Controller interface
 type controller struct {
 	ctx context.Context
 	db  cdxjdb.CdxjRecords
 }
 
+// Config represents the configuration of an Indexer controller
 type Config struct {
 	DatabaseAddr string `toml:"database_addr"`
 }
 
+// control is a Contoller singleton
 var control Controller
 var controllerOnce sync.Once
 var V1 = func() Controller {
@@ -51,10 +61,13 @@ var V1 = func() Controller {
 	return control
 }
 
+// New returns a new Controller
 func New(ctx context.Context, db cdxjdb.CdxjRecords) Controller {
 	return &controller{ctx: ctx, db: db}
 }
 
+// FindRecords searches for records that match the given values and returns a
+// list of matching records
 func (c *controller) FindRecords(
 	surt string,
 	types []simplecdxj.RecordType,
@@ -85,6 +98,7 @@ func (c *controller) FindRecords(
 	return c.db.Find(surt, s, b, a, limit)
 }
 
+// GetRecord returns the record for the given record ID
 func (c *controller) GetRecord(id string) (models.Record, error) {
 	r, err := c.db.Get(id)
 	if err == cdxjdb.ErrNotFound {

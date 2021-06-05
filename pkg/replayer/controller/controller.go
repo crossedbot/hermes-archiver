@@ -13,19 +13,25 @@ import (
 )
 
 var (
+	// Errors
 	ErrorReplayNotFound = errors.New("replay not found")
 )
 
+// Controller represents an interface of an WARC-CDXJ record replayer's
+// controller
 type Controller interface {
+	// Replay returns a WARC replay for the given record Id
 	Replay(id string) (models.Replay, error)
 }
 
+// controller implements the Controller interface
 type controller struct {
 	ctx context.Context
 	key []byte
 	rpl replayer.Replayer
 }
 
+// Config represents the configuration of a Replayer's controller
 type Config struct {
 	DatabaseAddr string `toml:"database_addr"`
 
@@ -37,6 +43,7 @@ type Config struct {
 	IpfsAddress string `toml:"ipfs_address"`
 }
 
+// control is a Contoller singleton
 var control Controller
 var controllerOnce sync.Once
 var V1 = func() Controller {
@@ -63,10 +70,12 @@ var V1 = func() Controller {
 	return control
 }
 
+// New returns a new Controller
 func New(ctx context.Context, key []byte, rpl replayer.Replayer) Controller {
 	return &controller{ctx: ctx, key: key, rpl: rpl}
 }
 
+// Replay returns a WARC replay for the given CDXJ record Id
 func (c *controller) Replay(id string) (models.Replay, error) {
 	return c.rpl.Replay(id, c.key)
 }

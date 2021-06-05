@@ -18,3 +18,4 @@ TODO
 *.db
 *.log
 *config.toml
+.env

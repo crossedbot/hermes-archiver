@@ -14,6 +14,8 @@ const (
 	MaxRecordLimit = 1000
 )
 
+// FindRecords handles a request to find CDXJ records matching a given set of
+// values
 func FindRecords(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 	query := r.URL.Query()
 
@@ -96,6 +98,7 @@ func FindRecords(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 	server.JsonResponse(w, &records, http.StatusOK)
 }
 
+// GetRecord handles requests to retrieve a CDXJ record matching a given ID
 func GetRecord(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 	id := p.Get("id")
 	if id == "" {
