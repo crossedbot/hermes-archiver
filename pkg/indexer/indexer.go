@@ -16,11 +16,16 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+// Indexer represents an interface to an WARC indexer
 type Indexer interface {
+	// Start starts the indexer's listener
 	Start() error
+
+	// SetEncryptionKey sets the encryption key and salt
 	SetEncryptionKey(key, salt []byte)
 }
 
+// indexer implements the Indexer interface
 type indexer struct {
 	warcindexer.Indexer
 	ctx     context.Context
@@ -29,6 +34,7 @@ type indexer struct {
 	db      cdxjdb.CdxjRecords
 }
 
+// New returns a new WARC Indexer
 func New(
 	ctx context.Context,
 	ipfsAddr string,
@@ -47,6 +53,8 @@ func New(
 	}, nil
 }
 
+// Start starts the indexer's listener for new WARC files written into the
+// Indexer's directory
 func (in *indexer) Start() error {
 	var err error
 	if in.watcher == nil {
@@ -59,6 +67,7 @@ func (in *indexer) Start() error {
 	return nil
 }
 
+// watch watches for new files written into the Indexer's directory
 func (in *indexer) watch() {
 	stop := false
 	for !stop {
@@ -93,6 +102,7 @@ func (in *indexer) watch() {
 	}
 }
 
+// newWatcher creates a new filesystem watcher
 func newWatcher(start string) (*fsnotify.Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -114,6 +124,7 @@ func newWatcher(start string) (*fsnotify.Watcher, error) {
 	return watcher, nil
 }
 
+// store stores a given CDXJ record into the given CDXJRecords datastore
 func store(db cdxjdb.CdxjRecords, cdxj simplecdxj.CDXJ) ([]string, error) {
 	ids := []string{}
 	for _, rec := range cdxj.Records {

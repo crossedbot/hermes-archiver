@@ -1,0 +1,39 @@
+services:
+  ipfs:
+    image: ipfs-api
+  redis:
+    image: crossedbot/redisedge
+  insights:
+    image: redislabs/redisinsight
+    depends_on:
+      - redis
+    links:
+      - redis
+    ports:
+      - "${INSIGHTS_PORT}:8001"
+    volumes:
+      - redisinsight:/db
+  indexer:
+    image: hermes-indexer
+    command: "-k '${KEY}' -s '${SALT}'"
+    depends_on:
+      - ipfs
+      - redis
+    links:
+      - ipfs
+      - redis
+    ports:
+      - "${INDEXER_PORT}:8888"
+  replayer:
+    image: hermes-replayer
+    command: "-k '${KEY}' -s '${SALT}'"
+    depends_on:
+      - ipfs
+      - redis
+    links:
+      - ipfs
+      - redis
+    ports:
+      - "${REPLAYER_PORT}:8989"
+volumes:
+  redisinsight: {}

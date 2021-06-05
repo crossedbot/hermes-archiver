@@ -28,7 +28,7 @@ clean:
 go-build:
 	@GOBIN=$(GOBIN) CGO_ENABLED=$(CGO) GOOS=$(OS) GOARCH=$(ARCH) \
 		go build $(LDFLAGS) -o $(GOBIN)/$(PROJECT) $(GOFILES)
-	
+
 go-clean:
 	@GOBIN=$(GOBIN) go clean
 

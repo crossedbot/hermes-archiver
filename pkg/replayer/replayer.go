@@ -23,16 +23,20 @@ import (
 	"github.com/crossedbot/simplewarc"
 )
 
+// Replayer represents the interface to a WARC-CDXJ record replayer
 type Replayer interface {
+	// Replay returns a WARC replay for the given ID and encryption key
 	Replay(id string, key []byte) (models.Replay, error)
 }
 
+// replayer implements the Replayer interface
 type replayer struct {
 	ctx    context.Context
 	db     cdxjdb.CdxjRecords
 	client *ipfshttpapi.HttpApi
 }
 
+// New returns a new Replayer
 func New(
 	ctx context.Context,
 	ipfsAddr string,
@@ -50,6 +54,7 @@ func New(
 	}, nil
 }
 
+// Replay returns a WARC replay for the given CDXJ record ID and encryption key
 func (rp *replayer) Replay(id string, key []byte) (models.Replay, error) {
 	var aead cipher.AEAD
 	var nonce []byte
@@ -95,6 +100,7 @@ func (rp *replayer) Replay(id string, key []byte) (models.Replay, error) {
 	}, nil
 }
 
+// parseLocator parses the given string and returns all IPFS paths
 func parseLocator(locator string) ([]ipfspath.Path, error) {
 	paths := []ipfspath.Path{}
 	parts := strings.Split(locator, "/")
@@ -108,6 +114,7 @@ func parseLocator(locator string) ([]ipfspath.Path, error) {
 	return paths, nil
 }
 
+// pull pulls the content for a given IPFS CID
 func pull(
 	ctx context.Context,
 	client *ipfshttpapi.HttpApi,
@@ -129,6 +136,7 @@ func pull(
 	return string(b), nil
 }
 
+// decompress decompresses the content in the given source
 func decompress(src io.Reader, c simplewarc.CompressionType) (io.Reader, error) {
 	r, err := gzip.NewReader(src)
 	if err != nil {
@@ -140,6 +148,7 @@ func decompress(src io.Reader, c simplewarc.CompressionType) (io.Reader, error) 
 	return dst, err
 }
 
+// decode decodes a given message and returns its content as a Reader
 func decode(msg string, key cipher.AEAD, nonce []byte) (io.Reader, error) {
 	decoded, err := base64.URLEncoding.DecodeString(msg)
 	if err != nil {

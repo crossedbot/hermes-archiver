@@ -22,21 +22,34 @@ const (
 )
 
 var (
+	// Errors
 	ErrNotFound = errors.New("cdxj record not found")
 )
 
+// CdxjRecords represents the interface an CDXJ records datastore
 type CdxjRecords interface {
+	// Init initializes the datastore
 	Init() error
+
+	// Set sets the given record's fields in the datastore and returns the
+	// records ID
 	Set(rec models.Record) (string, error)
+
+	// Get returns the record for the given record ID
 	Get(recordId string) (models.Record, error)
+
+	// Find searches the datastore for records that match the given values and
+	// returns a list of matching records
 	Find(surt string, types []string, before, after int64, limit int) (models.Records, error)
 }
 
+// cdxjRecords is an implementation of the CDXJ interface
 type cdxjRecords struct {
 	*redisearch.Client
 	ctx context.Context
 }
 
+// New returns a new CdxjRecords datastore
 func New(ctx context.Context, addr string) CdxjRecords {
 	return &cdxjRecords{
 		Client: redisearch.NewClient(addr, "cdxjs"),
@@ -44,6 +57,7 @@ func New(ctx context.Context, addr string) CdxjRecords {
 	}
 }
 
+// Init initializes the datastore
 func (d *cdxjRecords) Init() error {
 	schema := redisearch.NewSchema(redisearch.DefaultOptions).
 		AddField(redisearch.NewSortableTextField("surt", 100)).
@@ -54,6 +68,8 @@ func (d *cdxjRecords) Init() error {
 	return d.CreateIndex(schema)
 }
 
+// Set sets the given record's fields in the datastore and returns the records
+// ID
 func (d *cdxjRecords) Set(rec models.Record) (string, error) {
 	id := uuid.New().String()
 	idx := fmt.Sprintf("%s%s", CdxjKeyPrefix, id)
@@ -69,6 +85,7 @@ func (d *cdxjRecords) Set(rec models.Record) (string, error) {
 	return id, d.Index(doc)
 }
 
+// Get returns the record for the given record ID
 func (d *cdxjRecords) Get(recordId string) (models.Record, error) {
 	idx := fmt.Sprintf("%s%s", CdxjKeyPrefix, recordId)
 	doc, err := d.Client.Get(idx)
@@ -81,6 +98,8 @@ func (d *cdxjRecords) Get(recordId string) (models.Record, error) {
 	return parseCdxjRecordDoc(*doc)
 }
 
+// Find searches the datastore for records that match the given values and
+// returns a list of matching records
 func (d *cdxjRecords) Find(surt string, types []string, before, after int64, limit int) (models.Records, error) {
 	raw := []string{}
 	if surt != "" {
@@ -125,6 +144,8 @@ func (d *cdxjRecords) Find(surt string, types []string, before, after int64, lim
 	}, nil
 }
 
+// parseCdxjRecordDoc parses the given RediSearch document and returns it as a
+// CDXJ record
 func parseCdxjRecordDoc(doc redisearch.Document) (models.Record, error) {
 	rec := models.Record{Id: strings.TrimPrefix(doc.Id, CdxjKeyPrefix)}
 	if s, ok := doc.Properties["surt"]; ok {

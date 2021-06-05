@@ -6,6 +6,7 @@ import (
 	"github.com/crossedbot/common/golang/server"
 )
 
+// Route represents an Indexer server route
 type Route struct {
 	Handler          server.Handler
 	Method           string
@@ -13,6 +14,7 @@ type Route struct {
 	ResponseSettings []server.ResponseSetting
 }
 
+// Routes is a list of Indexer server routes
 var Routes = []Route{
 	Route{
 		GetRecord,

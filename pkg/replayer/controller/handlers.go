@@ -8,6 +8,7 @@ import (
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/models"
 )
 
+// Replay handles requests to retrieve a WARC replay for the given record Id
 func Replay(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 	id := p.Get("id")
 	if id == "" {
