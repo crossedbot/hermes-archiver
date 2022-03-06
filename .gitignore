@@ -19,3 +19,4 @@ TODO
 *.log
 *config.toml
 .env
+api/*/*.html
