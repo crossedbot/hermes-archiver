@@ -12,8 +12,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
-	mocksdb "github.com/crossedbot/hermes-archiver/pkg/database/mocks"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
+	"github.com/crossedbot/hermes-archiver/pkg/mocks"
 )
 
 func TestFindRecords(t *testing.T) {
@@ -46,7 +46,7 @@ func TestFindRecords(t *testing.T) {
 	}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockDb := mocksdb.NewMockCdxjRecords(mockCtrl)
+	mockDb := mocks.NewMockCdxjRecords(mockCtrl)
 	mockDb.EXPECT().
 		Find(surt, types, before, after, limit).
 		Return(expected, nil)
@@ -84,7 +84,7 @@ func TestGetRecord(t *testing.T) {
 	}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockDb := mocksdb.NewMockCdxjRecords(mockCtrl)
+	mockDb := mocks.NewMockCdxjRecords(mockCtrl)
 	mockDb.EXPECT().
 		Get(expected.Id).
 		Return(expected, nil)

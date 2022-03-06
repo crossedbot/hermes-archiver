@@ -42,7 +42,8 @@ type controller struct {
 
 // Config represents the configuration of an Indexer controller
 type Config struct {
-	DatabaseAddr string `toml:"database_addr"`
+	DatabaseAddr        string `toml:"database_addr"`
+	DropDatabaseOnStart bool   `toml:"drop_database_on_start"`
 }
 
 // control is a Contoller singleton
@@ -55,7 +56,18 @@ var V1 = func() Controller {
 			panic(err)
 		}
 		ctx := context.Background()
-		db := cdxjdb.New(ctx, cfg.DatabaseAddr)
+		db, err := cdxjdb.New(
+			ctx,
+			cfg.DatabaseAddr,
+			cfg.DropDatabaseOnStart,
+		)
+		if err != nil {
+			panic(fmt.Errorf(
+				"Controller: failed to connect to database at "+
+					"address ('%s') with error: %s",
+				cfg.DatabaseAddr, err,
+			))
+		}
 		control = New(ctx, db)
 	})
 	return control

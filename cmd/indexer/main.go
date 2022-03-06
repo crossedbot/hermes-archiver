@@ -32,12 +32,13 @@ var (
 
 // Config represents an indexer's configuration
 type Config struct {
-	Host          string `toml:"host"`
-	Port          int    `toml:"port"`
-	ReadTimeout   int    `toml:"read_timeout"`  // in seconds
-	WriteTimeout  int    `toml:"write_timeout"` // in seconds
-	WarcDirectory string `toml:"warc_directory"`
-	DatabaseAddr  string `toml:"database_addr"`
+	Host                string `toml:"host"`
+	Port                int    `toml:"port"`
+	ReadTimeout         int    `toml:"read_timeout"`  // in seconds
+	WriteTimeout        int    `toml:"write_timeout"` // in seconds
+	WarcDirectory       string `toml:"warc_directory"`
+	DatabaseAddr        string `toml:"database_addr"`
+	DropDatabaseOnStart bool   `toml:"drop_database_on_start"`
 
 	// Encyption configuraiton
 	EncryptionKey  string `toml:"encryption_key"`
@@ -101,8 +102,8 @@ func run(ctx context.Context) error {
 		return err
 	}
 	srv := newServer(c)
-	db := cdxjdb.New(ctx, c.DatabaseAddr)
-	if err := db.Init(); err != nil {
+	db, err := cdxjdb.New(ctx, c.DatabaseAddr, c.DropDatabaseOnStart)
+	if err != nil {
 		return err
 	}
 	in, err := indexer.New(ctx, c.IpfsAddress, c.WarcDirectory, db)

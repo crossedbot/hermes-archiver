@@ -3,7 +3,7 @@ module github.com/crossedbot/hermes-archiver
 go 1.17
 
 require (
-	github.com/RediSearch/redisearch-go v1.1.0
+	github.com/RediSearch/redisearch-go v1.1.1
 	github.com/crossedbot/common v0.0.0-20210203015813-0e121789bea8
 	github.com/crossedbot/go-warc-indexer v0.0.0-20210226022444-a49bc2ae8a64
 	github.com/crossedbot/simplecdxj v0.0.0-20210225045125-3a9727944d53
@@ -75,9 +75,9 @@ require (
 	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.1 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	golang.org/x/net v0.0.0-20210421230115-4e50805a0758 // indirect
+	golang.org/x/sys v0.0.0-20210421221651-33663a62ff08 // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

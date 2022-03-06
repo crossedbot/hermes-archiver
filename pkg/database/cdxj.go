@@ -18,6 +18,7 @@ import (
 )
 
 const (
+	CdxjIndexName = "cdxjs"
 	CdxjKeyPrefix = "cdxj:"
 )
 
@@ -28,9 +29,6 @@ var (
 
 // CdxjRecords represents the interface an CDXJ records datastore
 type CdxjRecords interface {
-	// Init initializes the datastore
-	Init() error
-
 	// Set sets the given record's fields in the datastore and returns the
 	// records ID
 	Set(rec models.Record) (string, error)
@@ -50,22 +48,28 @@ type cdxjRecords struct {
 }
 
 // New returns a new CdxjRecords datastore
-func New(ctx context.Context, addr string) CdxjRecords {
-	return &cdxjRecords{
-		Client: redisearch.NewClient(addr, "cdxjs"),
+func New(ctx context.Context, addr string, drop bool) (CdxjRecords, error) {
+	d := &cdxjRecords{
+		Client: redisearch.NewClient(addr, CdxjIndexName),
 		ctx:    ctx,
 	}
-}
-
-// Init initializes the datastore
-func (d *cdxjRecords) Init() error {
+	if drop {
+		d.Drop()
+	}
 	schema := redisearch.NewSchema(redisearch.DefaultOptions).
 		AddField(redisearch.NewSortableTextField("surt", 100)).
 		AddField(redisearch.NewSortableNumericField("timestamp")).
 		AddField(redisearch.NewTextField("type")).
 		AddField(redisearch.NewTextField("content"))
-	d.Drop()
-	return d.CreateIndex(schema)
+	indexExists, err := containsIndex(d.Client, CdxjIndexName)
+	if err != nil {
+		return nil, err
+	} else if !indexExists {
+		indexDefinition := redisearch.NewIndexDefinition().
+			AddPrefix(CdxjIndexName)
+		err = d.CreateIndexWithIndexDefinition(schema, indexDefinition)
+	}
+	return d, err
 }
 
 // Set sets the given record's fields in the datastore and returns the records
@@ -176,4 +180,17 @@ func parseCdxjRecordDoc(doc redisearch.Document) (models.Record, error) {
 		}
 	}
 	return rec, nil
+}
+
+func containsIndex(cli *redisearch.Client, idx string) (bool, error) {
+	indexes, err := cli.List()
+	if err != nil {
+		return false, err
+	}
+	for _, index := range indexes {
+		if index == idx {
+			return true, nil
+		}
+	}
+	return false, nil
 }
