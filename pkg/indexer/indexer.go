@@ -77,29 +77,43 @@ func (in *indexer) watch() {
 			in.watcher.Close()
 			in.watcher = nil
 		case event := <-in.watcher.Events:
+			// if a new file is written, try to index it
 			if event.Op == fsnotify.Write {
-				stats, err := os.Lstat(event.Name)
-				if err == nil && stats.Mode().IsRegular() {
-					cdxj, err := in.Index(event.Name)
-					if err == nil {
-						ids, err := store(in.db, cdxj)
-						if err != nil {
-							logger.Error(fmt.Sprintf(
-								"Failed to index record: %s",
-								err,
-							))
-						}
-						logger.Info(fmt.Sprintf(
-							"Indexed records: %s",
-							strings.Join(ids, ", "),
-						))
-					}
+				ids, err := in.index(event.Name)
+				if err != nil {
+					logger.Error(fmt.Sprintf(
+						"Failed to index record: %s",
+						err,
+					))
+					continue
 				}
+				logger.Info(fmt.Sprintf(
+					"Indexed records: %s",
+					strings.Join(ids, ", "),
+				))
 			}
 		case err := <-in.watcher.Errors:
 			logger.Error(err)
 		}
 	}
+}
+
+// index indexes the file at the given name, and returns their database IDs
+func (in *indexer) index(name string) ([]string, error) {
+	// ensure the file is a regular file
+	isRegular, err := isRegularFile(name)
+	if err != nil {
+		return []string{}, err
+	} else if !isRegular {
+		return []string{},
+			fmt.Errorf("'%s' is not a regular file", name)
+	}
+	// index the file and store the results
+	cdxj, err := in.Index(name)
+	if err != nil {
+		return []string{}, err
+	}
+	return store(in.db, cdxj)
 }
 
 // newWatcher creates a new filesystem watcher
@@ -144,4 +158,14 @@ func store(db cdxjdb.CdxjRecords, cdxj simplecdxj.CDXJ) ([]string, error) {
 		ids = append(ids, id)
 	}
 	return ids, nil
+}
+
+// isRegularFile returns true if the file at the given file path is a regular
+// file, otherwise false is returned
+func isRegularFile(name string) (bool, error) {
+	stats, err := os.Lstat(name)
+	if err != nil {
+		return false, err
+	}
+	return stats.Mode().IsRegular(), nil
 }
