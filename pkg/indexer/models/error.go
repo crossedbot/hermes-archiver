@@ -9,6 +9,7 @@ const (
 	ErrMaxRecordLimitCode = iota + 1000
 	ErrFailedConversionCode
 	ErrUnknownRecordTypeStringCode
+	ErrUnknownTextMatchStringCode
 	ErrRequiredParamCode
 	ErrUnauthorizedCode
 	ErrProcessingRequestCode

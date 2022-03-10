@@ -36,18 +36,18 @@ func (m *MockIndexerController) EXPECT() *MockIndexerControllerMockRecorder {
 }
 
 // FindRecords mocks base method.
-func (m *MockIndexerController) FindRecords(surt string, types []simplecdxj.RecordType, before, after string, limit int) (models.Records, error) {
+func (m *MockIndexerController) FindRecords(surt string, types []simplecdxj.RecordType, before, after string, match models.TextMatch, limit int) (models.Records, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindRecords", surt, types, before, after, limit)
+	ret := m.ctrl.Call(m, "FindRecords", surt, types, before, after, match, limit)
 	ret0, _ := ret[0].(models.Records)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindRecords indicates an expected call of FindRecords.
-func (mr *MockIndexerControllerMockRecorder) FindRecords(surt, types, before, after, limit interface{}) *gomock.Call {
+func (mr *MockIndexerControllerMockRecorder) FindRecords(surt, types, before, after, match, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRecords", reflect.TypeOf((*MockIndexerController)(nil).FindRecords), surt, types, before, after, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindRecords", reflect.TypeOf((*MockIndexerController)(nil).FindRecords), surt, types, before, after, match, limit)
 }
 
 // GetRecord mocks base method.

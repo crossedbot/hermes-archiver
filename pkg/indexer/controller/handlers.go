@@ -17,10 +17,26 @@ const (
 // FindRecords handles a request to find CDXJ records matching a given set of
 // values
 func FindRecords(w http.ResponseWriter, r *http.Request, p server.Parameters) {
+	var err error
 	query := r.URL.Query()
 
 	// get surt parameter
 	surt := query.Get("surt")
+	matchStr := query.Get("match")
+	match := models.TextMatchExact
+	if matchStr != "" {
+		match, err = models.ToTextMatch(matchStr)
+		if err != nil {
+			server.JsonResponse(w, models.Error{
+				Code: models.ErrUnknownTextMatchStringCode,
+				Message: fmt.Sprintf(
+					"%s \"%s\"",
+					err, matchStr,
+				),
+			}, http.StatusBadRequest)
+			return
+		}
+	}
 
 	// get record type parameters
 	recordTypes := []simplecdxj.RecordType{}
@@ -33,8 +49,11 @@ func FindRecords(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 				server.JsonResponse(
 					w,
 					models.Error{
-						Code:    models.ErrUnknownRecordTypeStringCode,
-						Message: fmt.Sprintf("%s \"%s\"", err.Error(), s),
+						Code: models.ErrUnknownRecordTypeStringCode,
+						Message: fmt.Sprintf(
+							"%s \"%s\"",
+							err, s,
+						),
 					},
 					http.StatusBadRequest,
 				)
@@ -83,13 +102,20 @@ func FindRecords(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 		}
 	}
 
-	records, err := V1().FindRecords(surt, recordTypes, before, after, limit)
+	records, err := V1().FindRecords(
+		surt, recordTypes,
+		before, after,
+		match, limit,
+	)
 	if err != nil {
 		server.JsonResponse(
 			w,
 			models.Error{
-				Code:    models.ErrProcessingRequestCode,
-				Message: fmt.Sprintf("failed to find records: %s", err),
+				Code: models.ErrProcessingRequestCode,
+				Message: fmt.Sprintf(
+					"failed to find records: %s",
+					err,
+				),
 			},
 			http.StatusInternalServerError,
 		)
@@ -117,8 +143,11 @@ func GetRecord(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 		server.JsonResponse(
 			w,
 			models.Error{
-				Code:    models.ErrNotFoundCode,
-				Message: fmt.Sprintf("failed to get record; %s", err),
+				Code: models.ErrNotFoundCode,
+				Message: fmt.Sprintf(
+					"failed to get record; %s",
+					err,
+				),
 			},
 			http.StatusNotFound,
 		)
@@ -127,8 +156,11 @@ func GetRecord(w http.ResponseWriter, r *http.Request, p server.Parameters) {
 		server.JsonResponse(
 			w,
 			models.Error{
-				Code:    models.ErrProcessingRequestCode,
-				Message: fmt.Sprintf("failed to get record; %s", err),
+				Code: models.ErrProcessingRequestCode,
+				Message: fmt.Sprintf(
+					"failed to get record; %s",
+					err,
+				),
 			},
 			http.StatusInternalServerError,
 		)

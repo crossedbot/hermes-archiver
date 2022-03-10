@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +24,9 @@ const (
 )
 
 var (
+	// Regular Expressions
+	TokenDelimitersRe = regexp.MustCompile(`(\b|\B)([,.<>{}\[\]\"\':;!@#\$%\^&\*\(\)\-\+=~ ])(\b|\B)`)
+
 	// Errors
 	ErrNotFound = errors.New("cdxj record not found")
 )
@@ -38,7 +42,13 @@ type CdxjRecords interface {
 
 	// Find searches the datastore for records that match the given values and
 	// returns a list of matching records
-	Find(surt string, types []string, before, after int64, limit int) (models.Records, error)
+	Find(
+		surt string,
+		types []string,
+		before, after int64,
+		match string,
+		limit int,
+	) (models.Records, error)
 }
 
 // cdxjRecords is an implementation of the CDXJ interface
@@ -82,7 +92,7 @@ func (d *cdxjRecords) Set(rec models.Record) (string, error) {
 		return "", err
 	}
 	doc := redisearch.NewDocument(idx, 1.0)
-	doc.Set("surt", rec.Surt).
+	doc.Set("surt", escapeString(rec.Surt)).
 		Set("timestamp", rec.Timestamp.Unix()).
 		Set("type", rec.Type.String()).
 		Set("content", base64.URLEncoding.EncodeToString(content))
@@ -104,17 +114,36 @@ func (d *cdxjRecords) Get(recordId string) (models.Record, error) {
 
 // Find searches the datastore for records that match the given values and
 // returns a list of matching records
-func (d *cdxjRecords) Find(surt string, types []string, before, after int64, limit int) (models.Records, error) {
+func (d *cdxjRecords) Find(
+	surt string,
+	types []string,
+	before, after int64,
+	match string,
+	limit int,
+) (models.Records, error) {
 	raw := []string{}
 	if surt != "" {
-		raw = append(raw, fmt.Sprintf("@surt:%%%s%%", surt))
+		surt = escapeString(surt)
+		switch match {
+		case models.TextMatchExact.String():
+			surt = fmt.Sprintf("(%s)", surt)
+		case models.TextMatchPartial.String():
+			surt = fmt.Sprintf("~(%s)", surt)
+		}
+		raw = append(raw, fmt.Sprintf("@surt:%s", surt))
 	}
 	if len(types) > 0 {
-		raw = append(raw, fmt.Sprintf("@type:(%s)", strings.Join(types, "|")))
+		raw = append(
+			raw,
+			fmt.Sprintf("@type:(%s)", strings.Join(types, "|")),
+		)
 	}
 	if after > 0 && before > 0 {
 		// filter within date range
-		raw = append(raw, fmt.Sprintf("@timestamp:[%d %d]", after, before))
+		raw = append(
+			raw,
+			fmt.Sprintf("@timestamp:[%d %d]", after, before),
+		)
 	} else if after > 0 {
 		// filter by lower range
 		raw = append(raw, fmt.Sprintf("@timestamp:[(%d +inf]", after))
@@ -153,7 +182,8 @@ func (d *cdxjRecords) Find(surt string, types []string, before, after int64, lim
 func parseCdxjRecordDoc(doc redisearch.Document) (models.Record, error) {
 	rec := models.Record{Id: strings.TrimPrefix(doc.Id, CdxjKeyPrefix)}
 	if s, ok := doc.Properties["surt"]; ok {
-		rec.Surt = s.(string)
+		surt := s.(string)
+		rec.Surt = unescapeString(surt)
 	}
 	if t, ok := doc.Properties["timestamp"]; ok {
 		ts := t.(string)
@@ -193,4 +223,12 @@ func containsIndex(cli *redisearch.Client, idx string) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func escapeString(s string) string {
+	return TokenDelimitersRe.ReplaceAllString(s, `\$2`)
+}
+
+func unescapeString(s string) string {
+	return strings.ReplaceAll(s, "\\", "")
 }

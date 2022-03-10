@@ -21,6 +21,7 @@ func TestFindRecords(t *testing.T) {
 	types := []string{"response"}
 	before := int64(1622551389)
 	after := int64(1622550000)
+	match := models.TextMatchExact
 	limit := 1
 	expected := models.Records{
 		Count: 1,
@@ -48,7 +49,7 @@ func TestFindRecords(t *testing.T) {
 	defer mockCtrl.Finish()
 	mockDb := mocks.NewMockCdxjRecords(mockCtrl)
 	mockDb.EXPECT().
-		Find(surt, types, before, after, limit).
+		Find(surt, types, before, after, match.String(), limit).
 		Return(expected, nil)
 	ctlr := &controller{db: mockDb}
 	actual, err := ctlr.FindRecords(
@@ -56,6 +57,7 @@ func TestFindRecords(t *testing.T) {
 		[]simplecdxj.RecordType{simplecdxj.ResponseRecordType},
 		strconv.FormatInt(before, 10),
 		strconv.FormatInt(after, 10),
+		match,
 		limit,
 	)
 	require.Nil(t, err)

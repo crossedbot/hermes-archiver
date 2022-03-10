@@ -35,18 +35,18 @@ func (m *MockCdxjRecords) EXPECT() *MockCdxjRecordsMockRecorder {
 }
 
 // Find mocks base method.
-func (m *MockCdxjRecords) Find(surt string, types []string, before, after int64, limit int) (models.Records, error) {
+func (m *MockCdxjRecords) Find(surt string, types []string, before, after int64, match string, limit int) (models.Records, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", surt, types, before, after, limit)
+	ret := m.ctrl.Call(m, "Find", surt, types, before, after, match, limit)
 	ret0, _ := ret[0].(models.Records)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find.
-func (mr *MockCdxjRecordsMockRecorder) Find(surt, types, before, after, limit interface{}) *gomock.Call {
+func (mr *MockCdxjRecordsMockRecorder) Find(surt, types, before, after, match, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockCdxjRecords)(nil).Find), surt, types, before, after, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockCdxjRecords)(nil).Find), surt, types, before, after, match, limit)
 }
 
 // Get mocks base method.

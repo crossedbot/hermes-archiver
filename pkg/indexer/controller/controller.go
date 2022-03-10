@@ -27,6 +27,7 @@ type Controller interface {
 		surt string,
 		types []simplecdxj.RecordType,
 		before, after string,
+		match models.TextMatch,
 		limit int,
 	) (models.Records, error)
 
@@ -84,6 +85,7 @@ func (c *controller) FindRecords(
 	surt string,
 	types []simplecdxj.RecordType,
 	before, after string,
+	match models.TextMatch,
 	limit int,
 ) (models.Records, error) {
 	var err error
@@ -95,19 +97,23 @@ func (c *controller) FindRecords(
 	if before != "" {
 		b, err = strconv.ParseInt(before, 10, 64)
 		if err != nil {
-			return models.Records{},
-				fmt.Errorf("'before' (%s) is not an integer", before)
+			return models.Records{}, fmt.Errorf(
+				"'before' (%s) is not an integer",
+				before,
+			)
 		}
 	}
 	a := int64(0)
 	if after != "" {
 		a, err = strconv.ParseInt(after, 10, 64)
 		if err != nil {
-			return models.Records{},
-				fmt.Errorf("'after' (%s) is not an integer", after)
+			return models.Records{}, fmt.Errorf(
+				"'after' (%s) is not an integer",
+				after,
+			)
 		}
 	}
-	return c.db.Find(surt, s, b, a, limit)
+	return c.db.Find(surt, s, b, a, match.String(), limit)
 }
 
 // GetRecord returns the record for the given record ID
