@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/crossedbot/common/golang/server"
+
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/models"
 )
 

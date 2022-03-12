@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/RediSearch/redisearch-go/redisearch"
+	"github.com/crossedbot/simplecdxj"
 	"github.com/google/uuid"
 
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
-	"github.com/crossedbot/simplecdxj"
 )
 
 const (

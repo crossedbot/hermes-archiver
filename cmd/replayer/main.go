@@ -13,6 +13,7 @@ import (
 	"github.com/crossedbot/common/golang/logger"
 	"github.com/crossedbot/common/golang/server"
 	"github.com/crossedbot/common/golang/service"
+
 	"github.com/crossedbot/hermes-archiver/cmd"
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/controller"
 )

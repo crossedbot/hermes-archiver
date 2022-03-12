@@ -6,8 +6,9 @@ import (
 	"strconv"
 
 	"github.com/crossedbot/common/golang/server"
-	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 	"github.com/crossedbot/simplecdxj"
+
+	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 )
 
 const (

@@ -11,16 +11,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/crossedbot/common/golang/crypto/aes"
+	"github.com/crossedbot/simplewarc"
 	ipfsfiles "github.com/ipfs/go-ipfs-files"
 	ipfshttpapi "github.com/ipfs/go-ipfs-http-client"
 	ipfspath "github.com/ipfs/go-path"
 	ipfscorepath "github.com/ipfs/interface-go-ipfs-core/path"
 	ma "github.com/multiformats/go-multiaddr"
 
-	"github.com/crossedbot/common/golang/crypto/aes"
 	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/replayer/models"
-	"github.com/crossedbot/simplewarc"
 )
 
 // Replayer represents the interface to a WARC-CDXJ record replayer
