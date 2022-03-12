@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+TODO
+*.db
+*.log
+*config.toml
+.env
+api/*/*.html
