@@ -4,10 +4,10 @@ go 1.17
 
 require (
 	github.com/RediSearch/redisearch-go v1.1.1
-	github.com/crossedbot/common v0.0.0-20210203015813-0e121789bea8
-	github.com/crossedbot/go-warc-indexer v0.0.0-20210226022444-a49bc2ae8a64
-	github.com/crossedbot/simplecdxj v0.0.0-20210225045125-3a9727944d53
-	github.com/crossedbot/simplewarc v0.0.0-20210108053025-06a0f7c6238c
+	github.com/crossedbot/common v0.0.0-20211227060111-08af6a662d96
+	github.com/crossedbot/go-warc-indexer v0.0.0-20220312174029-5a595843c792
+	github.com/crossedbot/simplecdxj v0.0.0-20220311110419-d94f375dd809
+	github.com/crossedbot/simplewarc v0.0.0-20220311105829-4b809a52af89
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
@@ -20,10 +20,10 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
-	github.com/crossedbot/simplesurt v0.0.0-20201227230012-3d428f26273a // indirect
+	github.com/crossedbot/simplesurt v0.0.0-20220311103523-48807df38d46 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gomodule/redigo v1.8.3 // indirect
@@ -52,7 +52,6 @@ require (
 	github.com/jbenet/goprocess v0.1.4 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.11 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/libp2p/go-libp2p-core v0.14.0 // indirect
 	github.com/libp2p/go-openssl v0.0.7 // indirect
@@ -71,16 +70,16 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polydawn/refmt v0.0.0-20201211092308-30ac6d18308e // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	github.com/sirupsen/logrus v1.6.0 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/whyrusleeping/cbor-gen v0.0.0-20220302191723-37c43cae8e14 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
-	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
+	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70 // indirect
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
+	golang.org/x/sys v0.0.0-20220307203707-22a9840ba4d7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

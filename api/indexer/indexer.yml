@@ -18,6 +18,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/surt'
         - $ref: '#/components/parameters/type'
+        - $ref: '#/components/parameters/match'
         - $ref: '#/components/parameters/before'
         - $ref: '#/components/parameters/after'
         - $ref: '#/components/parameters/limit'
@@ -86,7 +87,6 @@ components:
           uniqueItems: true
           minItems: 0
           maxItems: 1000
-
     Record:
       description: Indexed record object
       type: object
@@ -163,6 +163,15 @@ components:
         x_encryption_nonce:
           description: Nonce used in payload encryption
           type: string
+    TextMatchingStrategy:
+      description: |
+        Text matching strategy. Values prefixed with an 'i' indicate
+        case-insensitivity
+      type: string
+      default: exact
+      enum:
+        - exact
+        - partial
     Error:
       description: Base error object
       type: object
@@ -202,6 +211,13 @@ components:
         minItems: 1
       style: form
       explode: false
+    match:
+      description: Text matching strategy for the 'name' parameter
+      name: match
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/TextMatchingStrategy'
     before:
       # TODO API documentation does not reflect correct datatype?
       description: Return records created before provided timestamp

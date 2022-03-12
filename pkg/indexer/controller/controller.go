@@ -8,9 +8,10 @@ import (
 	"sync"
 
 	"github.com/crossedbot/common/golang/config"
+	"github.com/crossedbot/simplecdxj"
+
 	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
 	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
-	"github.com/crossedbot/simplecdxj"
 )
 
 var (

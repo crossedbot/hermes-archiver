@@ -25,7 +25,7 @@ services:
     volumes:
       - redisinsight:/db
   indexer:
-    image: hermes-indexer
+    image: crossedbot/hermes-indexer
     command: "-k '${KEY}' -s '${SALT}'"
     depends_on:
       ipfs:
@@ -38,7 +38,7 @@ services:
     ports:
       - "${INDEXER_PORT}:8888"
   replayer:
-    image: hermes-replayer
+    image: crossedbot/hermes-replayer
     command: "-k '${KEY}' -s '${SALT}'"
     depends_on:
       ipfs:

@@ -76,7 +76,7 @@ func New(ctx context.Context, addr string, drop bool) (CdxjRecords, error) {
 		return nil, err
 	} else if !indexExists {
 		indexDefinition := redisearch.NewIndexDefinition().
-			AddPrefix(CdxjIndexName)
+			AddPrefix(CdxjKeyPrefix)
 		err = d.CreateIndexWithIndexDefinition(schema, indexDefinition)
 	}
 	return d, err

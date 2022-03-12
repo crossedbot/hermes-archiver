@@ -10,10 +10,11 @@ import (
 
 	"github.com/crossedbot/common/golang/logger"
 	"github.com/crossedbot/go-warc-indexer"
-	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
-	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 	"github.com/crossedbot/simplecdxj"
 	"github.com/fsnotify/fsnotify"
+
+	cdxjdb "github.com/crossedbot/hermes-archiver/pkg/database"
+	"github.com/crossedbot/hermes-archiver/pkg/indexer/models"
 )
 
 // Indexer represents an interface to an WARC indexer
@@ -86,11 +87,17 @@ func (in *indexer) watch() {
 						err,
 					))
 					continue
+				} else if len(ids) > 0 {
+					logger.Info(fmt.Sprintf(
+						"Indexed records: %s",
+						strings.Join(ids, ", "),
+					))
+				} else {
+					logger.Info(fmt.Sprintf(
+						"No records indexed for '%s'",
+						filepath.Base(event.Name),
+					))
 				}
-				logger.Info(fmt.Sprintf(
-					"Indexed records: %s",
-					strings.Join(ids, ", "),
-				))
 			}
 		case err := <-in.watcher.Errors:
 			logger.Error(err)
